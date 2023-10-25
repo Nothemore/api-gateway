@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,9 +38,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMetricServer();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseHttpMetrics(options =>
+{
+    options.AddRouteParameter("version");
+});
 
 app.Run();
