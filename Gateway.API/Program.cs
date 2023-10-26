@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Gateway.API.FrameworkContext.Swagger;
 using Prometheus;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,17 @@ builder.Services.AddApiVersioning(options =>
 });
 
 #endregion
+
+#region Logger configuration
+
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog(logger);
+
+#endregion
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
