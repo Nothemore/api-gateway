@@ -1,24 +1,28 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gateway.API.Controllers;
+namespace Gateway.API.WeatherForecastContext.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/weather-forecast")]
-public class WeatherForecastController : ControllerBase
+[ApiVersion(1.0)]
+public class WeatherForecastController1V : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<WeatherForecastController1V> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController1V(ILogger<WeatherForecastController1V> logger)
     {
         _logger = logger;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
+    [ApiVersion( 1.0, Deprecated = true )]
+    [MapToApiVersion(1.0)]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
