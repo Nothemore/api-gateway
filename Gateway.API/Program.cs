@@ -4,9 +4,15 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region Configuration
 
-builder.Services.AddControllers();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+#endregion
 
 #region Api versioning
 
@@ -24,12 +30,9 @@ builder.Services.AddApiVersioning(options =>
 
 #endregion
 
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddCustomizedSwaggerGen();
-
 
 var app = builder.Build();
 
@@ -42,9 +45,6 @@ app.UseMetricServer();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseHttpMetrics(options =>
-{
-    options.AddRouteParameter("version");
-});
+app.UseHttpMetrics(options => { options.AddRouteParameter("version"); });
 
 app.Run();
