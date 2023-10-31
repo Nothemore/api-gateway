@@ -1,5 +1,7 @@
 using Asp.Versioning;
 using Gateway.API.FrameworkContext.Swagger;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Prometheus;
 using Serilog;
 
@@ -45,6 +47,21 @@ builder.Host.UseSerilog(logger);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomizedSwaggerGen();
+
+#region OTel traces
+
+var otel = builder.Services.AddOpenTelemetry();
+otel.ConfigureResource(resource => resource
+    .AddService(serviceName: builder.Environment.ApplicationName));
+
+otel.WithTracing(tracing =>
+{
+    tracing.AddAspNetCoreInstrumentation();
+    tracing.AddHttpClientInstrumentation();
+    tracing.AddOtlpExporter();
+});
+
+#endregion
 
 var app = builder.Build();
 
